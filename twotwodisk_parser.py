@@ -1,11 +1,19 @@
 #!/usr/bin/python3
 
+import sys
 from lark.lark import Lark
 from lark import Transformer, UnexpectedToken, UnexpectedCharacters, UnexpectedEOF
 from twotwodisk import TwoTwoDisk, DuplicateParmError, MissingParmError
 from twotwodisk_grammer import TWOTWODISK, build_callbacks
 from twotwodisk_transform import TwoTwoDiskTransformer, DuplicateDefError, SectorsBeforeNumSidesError, SideListBeforeSectorsError
-    
+
+try:
+    infile = sys.argv[1]
+except IndexError:
+    raise SystemExit(f"Usage: {sys.argv[0]} <22DiskDef_file>")
+
+print(infile[::-1])
+
 xfm = TwoTwoDiskTransformer()
     
 # Instantiate the parser and connect data handlers
@@ -15,7 +23,7 @@ parser = Lark(TWOTWODISK,
               parser = 'lalr',
               transformer = xfm)
 
-with open("22disk", "r") as f:
+with open(infile, "r") as f:
     # Slurp in the entire file
     data = f.read()
     try:

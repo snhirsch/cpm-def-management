@@ -10,3 +10,22 @@ The code is written in Python (version 3.6 or greater required) and uses the Lar
 How to work with the code:  
 
 Install Python 3.6 or newer on your system, which can be Windows, Linux or MacOS.  Most recent Linux distributions will already have this requirement met.  Next, install the latest release of Lark.  This is generally done by running 'pip3', e.g. (for Linux) **pip3 lark**.  Lark may be available through your package manager, but it's best to get the latest release version as I do not test with older ones.  
+
+There are (2) executable programs:
+
+cpmtools_parser.py
+twotwodisk_parser.py
+
+These expect the name of the input definition file as a command line
+argument.  I have included a large cpmtools diskdef file as a parser test, but
+have not reviewed the contents for correctness with cpmtools and real data. The
+22Disk definitions are technically proprietary to Sydex so I have not included them
+in the project.
+
+The parsers will complain about any obvious syntax errors, missing
+required parameters and, in the case of 22Disk, parameter
+ordering. More checking can and should be added.
+
+If no syntax errors are found, the program will read all definitions
+in alphabetical order and serialize their contents to stdout as valid
+definitions.

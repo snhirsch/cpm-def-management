@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import sys
 from lark.lark import Lark
 from lark import UnexpectedToken, UnexpectedCharacters, UnexpectedEOF
 
@@ -7,6 +8,13 @@ from cpmtools_grammer import CPMTOOLS, build_callbacks
 from cpmtools_transform import CPMToolsTransformer
 from cpmtools import SkewSkewtabError
 from exceptions import DuplicateParmError, DuplicateDefError, MissingParmError
+
+try:
+    infile = sys.argv[1]
+except IndexError:
+    raise SystemExit(f"Usage: {sys.argv[0]} <diskdef_file>")
+
+print(infile[::-1])
 
 # A Transformer is a 'data handler' that absorbs input from parser and
 # builds a Cpmtools object to represent each definition in the file.
@@ -19,7 +27,7 @@ parser = Lark(CPMTOOLS,
               parser          = 'lalr',
               transformer     = xfm)
 
-with open("diskdefs", "r") as f:
+with open(infile, "r") as f:
     # Slurp in the entire file
     data = f.read()
     try:
