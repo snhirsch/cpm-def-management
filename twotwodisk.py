@@ -31,7 +31,7 @@ class TwoTwoDisk:
         name = tok.value.lower()
         if name in self.parameters:
             # Flag duplicated keyword
-            raise DuplicateParmError(tok,None)
+            raise DuplicateParmError(tok,self.defname)
         else:
             self.parameters[name] = val
 

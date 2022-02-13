@@ -12,8 +12,6 @@ try:
 except IndexError:
     raise SystemExit(f"Usage: {sys.argv[0]} <22DiskDef_file>")
 
-print(infile)
-
 xfm = TwoTwoDiskTransformer()
     
 # Instantiate the parser and connect data handlers
@@ -40,28 +38,28 @@ with open(infile, "r") as f:
             print(val)
             
     except DuplicateParmError as d:
-        print("Duplicate parameter at line: %d, column: %d" % (d.line, d.column))
+        print("Duplicate parameter in definition '%s' (line: %d, column: %d)" % (d.curdef, d.line, d.column))
         ctxt = d.get_context(data)
         print(ctxt)
 
     except MissingParmError as d:
-        print("Required parameters missing from definition %s:" % d.defname)
+        print("Required parameters missing from definition '%s':" % d.defname)
         for parm in d.missing:
             print("%s " % parm, end="")
         print("\n")
 
     except DuplicateDefError as d:
-        print("Duplicate definition at line: %d, column: %d" % (d.line, d.column))
+        print("Duplicate definition '%s' at line: %d, column: %d" % (d.defname, d.line, d.column))
         ctxt = d.get_context(data)
         print(ctxt)
         
     except SectorsBeforeNumSidesError as d:
-        print("SECTORS parameter seen before SIDES at line: %d, column: %d\n" % (d.line, d.column))
+        print("SECTORS parameter seen before SIDES in definition '%s' (line: %d, column: %d)\n" % (d.defname, d.line, d.column))
         ctxt = d.get_context(data)
         print(ctxt)
         
     except SideListBeforeSectorsError as d:
-        print("SIDE1/SIDE2 parameter seen before SECTORS at line: %d, column: %d\n" % (d.line, d.column))
+        print("SIDE1/SIDE2 parameter seen before SECTORS in definition '%s' (line: %d, column: %d)\n" % (d.defname, d.line, d.column))
         ctxt = d.get_context(data)
         print(ctxt)
         

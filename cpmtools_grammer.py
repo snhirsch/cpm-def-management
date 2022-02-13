@@ -38,7 +38,7 @@ END: "end"
 pair: known
     | unknown
 
-unknown: /\S+/ /\S+/ EOL
+unknown: /\S+/ /.+/ EOL
 
 known: IPARM INT EOL                          -> intparm
      | SKEWTAB LISTVAL EOL                    -> listparm

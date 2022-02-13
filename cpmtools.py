@@ -2,7 +2,9 @@ from lark import UnexpectedToken
 from exceptions import DuplicateParmError, MissingParmError
 
 class SkewSkewtabError(UnexpectedToken):
-    pass
+    def __init__(self, toks, curdef):
+        super().__init__(toks, None)
+        self.curdef = curdef
 
 # DiskDef object represents a single cpmtools diskdef stanza, comments
 # included.
@@ -31,10 +33,10 @@ class CPMTools:
         name = tok.value
         if name in self.parameters:
             # Flag duplicated keyword
-            raise DuplicateParmError(tok,None)
+            raise DuplicateParmError(tok,self.defname)
         if (name == 'skew' and 'skewtab' in self.parameters) or \
            name == 'skewtab' and 'skew' in self.parameters:
-            raise SkewSkewtabError(tok,None)
+            raise SkewSkewtabError(tok,self.defname)
         self.parameters[name] = val
         
     # Return a dictionary of parameters

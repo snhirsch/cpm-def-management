@@ -3,10 +3,14 @@ from twotwodisk import TwoTwoDisk
 from exceptions import DuplicateDefError
 
 class SectorsBeforeNumSidesError(UnexpectedToken):
-    pass
+    def __init__(self, toks, curdef):
+        super().__init__(toks, None)
+        self.defname = curdef
 
 class SideListBeforeSectorsError(UnexpectedToken):
-    pass
+    def __init__(self, toks, curdef):
+        super().__init__(toks, None)
+        self.defname = curdef
 
 class TwoTwoDiskTransformer(Transformer):
 
@@ -40,7 +44,7 @@ class TwoTwoDiskTransformer(Transformer):
         self.curdef = toks[0].value
 
         if self.curdef in self.definitions:
-            raise DuplicateDefError(toks[0],None)
+            raise DuplicateDefError(toks[0],self.curdef)
         
         self.defn = self.definitions[self.curdef] = TwoTwoDisk(self.curdef)
         
@@ -57,12 +61,12 @@ class TwoTwoDiskTransformer(Transformer):
 
     def sectors(self, toks):
         if not 'sides' in self.defn.get_parameters():
-            raise SectorsBeforeNumSidesError(toks[0],None)
+            raise SectorsBeforeNumSidesError(toks[0],self.curdef)
         self.defn.add_parameter(toks[0], [toks[1], toks[2]])
 
     def side(self, toks):
         if not 'sectors' in self.defn.get_parameters():
-            raise SideListBeforeSectorsError(toks[0],None)
+            raise SideListBeforeSectorsError(toks[0],self.curdef)
         (parm, hd, lst) = toks[0:3]
         if len(toks) > 3:
             lst.extend(toks[3])

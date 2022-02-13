@@ -22,9 +22,11 @@ class CPMToolsTransformer(Transformer):
 
     def unknown(self, toks):
         if self.strict:
-            raise UnknownKeywordError(toks[0],None)
+            raise UnknownKeywordError(toks[0],self.curdef)
         else:
-            print("WARNING: Unknown keyword %s at line: %d, column: %d" % (toks[0].value, toks[0].line, toks[0].column))
+            tok = toks[0]
+            print("WARNING: Unknown keyword '%s' in definition '%s' (line: %d, column: %d)"
+                  % (tok.value,self.curdef,tok.line,tok.column))
             
     def get_definitions(self):
         return self.definitions
@@ -61,7 +63,7 @@ class CPMToolsTransformer(Transformer):
         self.curdef = toks[0].value
 
         if self.curdef in self.definitions:
-            raise DuplicateDefError(toks[0],None)
+            raise DuplicateDefError(toks[0],self.curdef)
         
         # Create top-level dictionary entries
         self.diskdef = self.definitions[self.curdef] = CPMTools(self.curdef)

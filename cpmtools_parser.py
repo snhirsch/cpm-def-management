@@ -14,8 +14,6 @@ try:
 except IndexError:
     raise SystemExit(f"Usage: {sys.argv[0]} <diskdef_file>")
 
-print(infile)
-
 # A Transformer is a 'data handler' that absorbs input from parser and
 # builds a Cpmtools object to represent each definition in the file.
 xfm = CPMToolsTransformer()
@@ -44,28 +42,28 @@ with open(infile, "r") as f:
             print(val)
 
     except MissingParmError as d:
-        print("Required parameters missing from definition %s:" % d.defname)
+        print("Required parameters missing from definition '%s':" % d.defname)
         for parm in d.missing:
             print("%s " % parm, end="")
         print("\n")
 
     except SkewSkewtabError as d:
-        print("Skew and skewtab cannot both be specified (line: %d, column: %d)" % (d.line, d.column))
+        print("Skew and skewtab both found in definition '%s' (line: %d, column: %d)" % (d.curdef, d.line, d.column))
         ctxt = d.get_context(data)
         print(ctxt)
         
     except DuplicateParmError as d:
-        print("Duplicate parameter at line: %d, column: %d" % (d.line, d.column))
+        print("Duplicate parameter in definition '%s' (line: %d, column: %d)" % (d.curdef, d.line, d.column))
         ctxt = d.get_context(data)
         print(ctxt)
         
     except DuplicateDefError as d:
-        print("Duplicate definition at line: %d, column: %d" % (d.line, d.column))
+        print("Duplicate definition '%s' at line: %d, column: %d" % (d.defname, d.line, d.column))
         ctxt = d.get_context(data)
         print(ctxt)
 
     except UnknownKeywordError as u:
-        print("Unknown keyword at line: %d, column: %d" % (u.line, u.column))
+        print("Unknown keyword in definition '%s' (line: %d, column: %d)" % (u.defname, u.line, u.column))
         ctxt = u.get_context(data)
         print(ctxt)
         
