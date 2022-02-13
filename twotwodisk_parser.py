@@ -12,7 +12,7 @@ try:
 except IndexError:
     raise SystemExit(f"Usage: {sys.argv[0]} <22DiskDef_file>")
 
-print(infile[::-1])
+print(infile)
 
 xfm = TwoTwoDiskTransformer()
     

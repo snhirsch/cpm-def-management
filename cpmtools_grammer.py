@@ -35,27 +35,32 @@ DISKDEF: "diskdef"
 DEFNAME: (LETTER|DIGIT) ("."|"_"|"-"|LETTER|DIGIT)*
 END: "end"
 
-pair:  IPARM INT EOL                          -> intparm
+pair: known
+    | unknown
+
+unknown: /\S+/ /\S+/ EOL
+
+known: IPARM INT EOL                          -> intparm
      | SKEWTAB LISTVAL EOL                    -> listparm
      | OFFSET INT [MULTIPLIER [TRAILING]] EOL -> unitparm
      | LIBDISK CNAME EOL                      -> strparm
      | OS OSVAL EOL                           -> strparm
 
-IPARM: "seclen"
-     | "tracks"
-     | "sectrk"
-     | "dirblks"
-     | "blocksize"
-     | "boottrk"
-     | "maxdir"
-     | "skew"
-     | "logicalextents"
+IPARM.1: "seclen"
+       | "tracks"
+       | "sectrk"
+       | "dirblks"
+       | "blocksize"
+       | "boottrk"
+       | "maxdir"
+       | "skew"
+       | "logicalextents"
 
 // Give 'skewtab' higher priority than 'skew'
-SKEWTAB.1: "skewtab"
-OFFSET:    "offset"
-LIBDISK:   "libdsk:format"
-OS:        "os"
+SKEWTAB.2: "skewtab"
+OFFSET.1:  "offset"
+LIBDISK.1: "libdsk:format"
+OS.1:      "os"
 
 LISTVAL: INT ("," INT)*
 OSVAL: "2.2"|"3"|"isx"|"p2dos"|"zsys"

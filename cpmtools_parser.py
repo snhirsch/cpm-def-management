@@ -7,14 +7,14 @@ from lark import UnexpectedToken, UnexpectedCharacters, UnexpectedEOF
 from cpmtools_grammer import CPMTOOLS, build_callbacks
 from cpmtools_transform import CPMToolsTransformer
 from cpmtools import SkewSkewtabError
-from exceptions import DuplicateParmError, DuplicateDefError, MissingParmError
+from exceptions import DuplicateParmError, DuplicateDefError, MissingParmError, UnknownKeywordError
 
 try:
     infile = sys.argv[1]
 except IndexError:
     raise SystemExit(f"Usage: {sys.argv[0]} <diskdef_file>")
 
-print(infile[::-1])
+print(infile)
 
 # A Transformer is a 'data handler' that absorbs input from parser and
 # builds a Cpmtools object to represent each definition in the file.
@@ -63,18 +63,24 @@ with open(infile, "r") as f:
         print("Duplicate definition at line: %d, column: %d" % (d.line, d.column))
         ctxt = d.get_context(data)
         print(ctxt)
+
+    except UnknownKeywordError as u:
+        print("Unknown keyword at line: %d, column: %d" % (u.line, u.column))
+        ctxt = u.get_context(data)
+        print(ctxt)
         
     except UnexpectedToken as u:
         print("Unxpected token at line: %d, column: %d" % (u.line, u.column))
         ctxt = u.get_context(data)
         print(ctxt)
-        if len(u.expected) > 1:
-            print("Expected one of:")
-        else:
-            print("Expected: ", end="")
-        for tok in u.expected:
-            name = str(parser.get_terminal(tok).pattern)
-            print(name.replace('\\',''))
+        if u.expected is not None:
+            if len(u.expected) > 1:
+                print("Expected one of:")
+            else:
+                print("Expected: ", end="")
+                for tok in u.expected:
+                    name = str(parser.get_terminal(tok).pattern)
+                    print(name.replace('\\',''))
             
     except UnexpectedCharacters as u:
         print(u)

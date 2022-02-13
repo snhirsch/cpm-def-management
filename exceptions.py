@@ -1,5 +1,8 @@
 from lark import UnexpectedToken
 
+class UnknownKeywordError(UnexpectedToken):
+    pass
+
 class DuplicateDefError(UnexpectedToken):
     pass
 

@@ -1,9 +1,9 @@
 from lark import Transformer, UnexpectedToken
 from cpmtools import CPMTools
-from exceptions import DuplicateDefError
+from exceptions import DuplicateDefError, UnknownKeywordError
 
 class CPMToolsTransformer(Transformer):
-    def __init__(self):
+    def __init__(self, strict=False):
         # line count
         self.count = 0
         # True if last token seen was EOL
@@ -18,7 +18,14 @@ class CPMToolsTransformer(Transformer):
         self.inline = None
         # per-def parameters
         self.definitions = dict()
+        self.strict = strict
 
+    def unknown(self, toks):
+        if self.strict:
+            raise UnknownKeywordError(toks[0],None)
+        else:
+            print("WARNING: Unknown keyword %s at line: %d, column: %d" % (toks[0].value, toks[0].line, toks[0].column))
+            
     def get_definitions(self):
         return self.definitions
         
