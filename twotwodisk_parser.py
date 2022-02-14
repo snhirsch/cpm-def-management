@@ -4,7 +4,7 @@ import sys
 from lark.lark import Lark
 from lark import Transformer, UnexpectedToken, UnexpectedCharacters, UnexpectedEOF
 from twotwodisk import TwoTwoDisk, DuplicateParmError, MissingParmError
-from twotwodisk_grammer import TWOTWODISK, build_callbacks
+from twotwodisk_grammar import TWOTWODISK, build_callbacks
 from twotwodisk_transform import TwoTwoDiskTransformer, DuplicateDefError, SectorsBeforeNumSidesError, SideListBeforeSectorsError
 
 try:

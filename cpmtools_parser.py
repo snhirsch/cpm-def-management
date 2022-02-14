@@ -4,7 +4,7 @@ import sys
 from lark.lark import Lark
 from lark import UnexpectedToken, UnexpectedCharacters, UnexpectedEOF
 
-from cpmtools_grammer import CPMTOOLS, build_callbacks
+from cpmtools_grammar import CPMTOOLS, build_callbacks
 from cpmtools_transform import CPMToolsTransformer
 from cpmtools import SkewSkewtabError
 from exceptions import DuplicateParmError, DuplicateDefError, MissingParmError, UnknownKeywordError
