@@ -38,7 +38,7 @@ with open(infile, "r") as f:
             print(val)
             
     except DuplicateParmError as d:
-        print("Duplicate parameter in definition '%s' (line: %d, column: %d)" % (d.curdef, d.line, d.column))
+        print("Duplicate parameter in definition '%s' (line: %d, column: %d)" % (d.defname, d.line, d.column))
         ctxt = d.get_context(data)
         print(ctxt)
 

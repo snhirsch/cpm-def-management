@@ -24,7 +24,7 @@ description: DESCRIPTION
 DESCRIPTION: /.+/
 
 defname: DEFNAME
-DEFNAME: LETTER (LETTER|DIGIT)~1..3
+DEFNAME: (LETTER|DIGIT)~1..4
 
 _contents: real 
         | reference
