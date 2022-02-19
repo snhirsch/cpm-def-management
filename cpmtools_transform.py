@@ -1,11 +1,11 @@
-from lark import Transformer, UnexpectedToken
-from cpmtools import CPMTools
-from exceptions import DuplicateDefError, UnknownKeywordError
+from lark import Transformer
+from cpmtools import CPMTools, SkewSkewtabError
+from exceptions import UnknownKeywordError,  DuplicateParmError, MissingParmError
 
 class CPMToolsTransformer(Transformer):
     def __init__(self, strict=False):
-        # line count
-        self.count = 0
+        # Starting line of current def in document
+        self.start = None
         # True if last token seen was EOL
         self.eol = None
         # Name of current diskdef
@@ -17,29 +17,27 @@ class CPMToolsTransformer(Transformer):
         # current inline comment
         self.inline = None
         # per-def parameters
-        self.definitions = dict()
         self.strict = strict
 
+    def set_start(self, linenum):
+        self.start = linenum
+        
     def unknown(self, toks):
         if self.strict:
             raise UnknownKeywordError(toks[0],self.curdef)
         else:
             tok = toks[0]
-            print("WARNING: Unknown keyword '%s' in definition '%s' (line: %d, column: %d)"
-                  % (tok.value,self.curdef,tok.line,tok.column))
+            print("WARNING: Unknown keyword '%s' in definition '%s' (line: %d)"
+                  % (tok.value, self.curdef, self.start))
             
-    def get_definitions(self):
-        return self.definitions
+    def get_definition(self):
+        return self.diskdef
         
     # EOL was most recent terminal
     def lex_eol(self, toks):
         self.eol = True
-        self.count = self.count + 1
         return toks
     
-    def get_eol_count(self):
-        return self.count
-
     # Flag EOL as not most recent. Used to determine whether a comment
     # is in-line or full-line (see 'lex_comment').
     def lex_identifier(self, toks):
@@ -62,35 +60,36 @@ class CPMToolsTransformer(Transformer):
         # Set current definition name
         self.curdef = toks[0].value
 
-        if self.curdef in self.definitions:
-            raise DuplicateDefError(toks[0],self.curdef)
-        
         # Create top-level dictionary entries
-        self.diskdef = self.definitions[self.curdef] = CPMTools(self.curdef)
+        self.diskdef = CPMTools(self.curdef)
  
         # Move def-level inline into collection
         if self.inline is not None:
             self.comments.append(self.inline)
             self.inline = None
-            
+
+    def _add_parameter(self, tok, value):
+        name = tok.value
+        self.diskdef.add_parameter(name, value)
+        
     # Capture parameters and values
     def intparm(self, toks):
         (a, b, eol) = toks
-        self.diskdef.add_parameter(a, int(b.value))
-        self.diskdef.add_parm_comment(a, self.inline)
+        self._add_parameter(a, int(b.value))
+        self.diskdef.add_parm_comment(a.value, self.inline)
         self.inline = None
 
     def strparm(self, toks):
         (a, b, eol) = toks
-        self.diskdef.add_parameter(a, b.value)
-        self.diskdef.add_parm_comment(a, self.inline)
+        self._add_parameter(a, b.value)
+        self.diskdef.add_parm_comment(a.value, self.inline)
         self.inline = None
         
     def listparm(self, toks):
         (a, b, eol) = toks
         # Split comma-separated list of strings into list of ints
-        self.diskdef.add_parameter(a, [int(item) for item in b.value.split(',')])
-        self.diskdef.add_parm_comment(a, self.inline)
+        self._add_parameter(a, [int(item) for item in b.value.split(',')])
+        self.diskdef.add_parm_comment(a.value, self.inline)
         self.inline = None
         
     def unitparm(self, toks):
@@ -99,8 +98,8 @@ class CPMToolsTransformer(Transformer):
             units = "B"
         else:
             units = c.upper()
-        self.diskdef.add_parameter(a, [b.value, units])
-        self.diskdef.add_parm_comment(a, self.inline)
+        self._add_parameter(a, [b.value, units])
+        self.diskdef.add_parm_comment(a.value, self.inline)
         self.inline = None
 
     # Finalize data for current diskdef
@@ -115,5 +114,4 @@ class CPMToolsTransformer(Transformer):
         self.diskdef.finalize()
         # Clean up for next def
         self.comments = []
-        self.diskdef = None
         

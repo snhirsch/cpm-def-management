@@ -25,8 +25,6 @@ COMMENT: /#.*/
 
 // Parser grammar starts here
 //
-start: diskdef+ EOL*
-
 diskdef: EOL* DISKDEF defname EOL (pair|EOL)+ END EOL -> end
 
 defname: DEFNAME
